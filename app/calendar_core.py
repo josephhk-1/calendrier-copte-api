@@ -166,7 +166,6 @@ def build_day(data: Dict[str, Any], date: datetime.date, lang: str = "ar") -> Di
     todays_feasts_codes = {f["code"] for f in fixed} | {f["code"] for f in movable}
     
     # Logique principale
-    saints = [s for s in data["saints"] if any(comm["jour_copte"] == s["jour_copte"] and comm["mois_copte"] == s["mois_copte"] for comm in data["daily_commemorations"] if s["id"] in comm["liste_saints"])]
     fast = fasting_state(date, data, todays_feasts_codes)
     
     pascha = coptic_pascha_date(date.year)
@@ -179,9 +178,25 @@ def build_day(data: Dict[str, Any], date: datetime.date, lang: str = "ar") -> Di
         "code": f["code"], "titre": get_lang_field(f, "titre"), "resume": get_lang_field(f, "resume"), "rang": f.get("rang")
     } for f in fixed + movable]
     
-    commems_res = [{
-        "id": s["id"], "type": s.get("type"), "nom": get_lang_field(s, "nom"), "resume": get_lang_field(s, "resume"), "fiabilite": s.get("fiabilite", "moyenne")
-    } for s in saints if s["jour_copte"] == cinfo["jour"] and s["mois_copte"] == cinfo["mois_num"]]
+    # Correction de la logique pour trouver les saints
+    saints_ids_today = []
+    for comm in data.get("daily_commemorations", []):
+        if comm["jour_copte"] == cinfo["jour"] and comm["mois_copte"] == cinfo["mois_num"]:
+            saints_ids_today.extend(comm["liste_saints"])
+            
+    saints_by_id = {s['id']: s for s in data.get("saints", [])}
+    
+    commems_res = []
+    for saint_id in saints_ids_today:
+        saint = saints_by_id.get(saint_id)
+        if saint:
+            commems_res.append({
+                "id": saint["id"], 
+                "type": saint.get("type"), 
+                "nom": get_lang_field(saint, "nom"), 
+                "resume": get_lang_field(saint, "resume"), 
+                "fiabilite": saint.get("fiabilite", "moyenne")
+            })
 
     return {
         "date_gregorienne": date.isoformat(), "date_copte": cinfo, "periode_liturgique": period,
