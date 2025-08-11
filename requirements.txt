@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+jsonschema
+psycopg2-binary
+pytest

@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  # Service pour la base de données PostgreSQL
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: calendar
+      POSTGRES_PASSWORD: calendar
+      POSTGRES_DB: calendar
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U calendar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Service pour votre API
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MASTER_DATA_PATH=data/master_data.json
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

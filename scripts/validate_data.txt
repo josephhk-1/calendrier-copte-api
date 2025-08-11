@@ -1,0 +1,37 @@
+import json
+import pathlib
+import sys
+import jsonschema
+
+print("--- Lancement de la validation du schéma ---")
+
+try:
+    # Charger le schéma de validation
+    schema_path = pathlib.Path("schemas/master_schema.json")
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    print("Schéma chargé avec succès.")
+
+    # Charger le fichier de données
+    data_path = pathlib.Path("data/master_data.json")
+    data = json.loads(data_path.read_text(encoding="utf-8"))
+    print("Fichier de données chargé avec succès.")
+
+    # Valider les données par rapport au schéma
+    jsonschema.validate(instance=data, schema=schema)
+    
+    print("\n--- Validation terminée ---")
+    print("Succès ! Le fichier master_data.json est conforme au schéma.")
+    sys.exit(0)
+
+except FileNotFoundError as e:
+    print(f"\nErreur : Fichier introuvable - {e.filename}")
+    sys.exit(1)
+except json.JSONDecodeError as e:
+    print(f"\nErreur : Le fichier JSON est mal formaté - {e}")
+    sys.exit(1)
+except jsonschema.ValidationError as e:
+    print("\n--- Validation échouée ---")
+    print("Le fichier master_data.json n'est pas conforme au schéma.")
+    print(f"Erreur : {e.message}")
+    print(f"Chemin de l'erreur dans le fichier : {list(e.path)}")
+    sys.exit(1)

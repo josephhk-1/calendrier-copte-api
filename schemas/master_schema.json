@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CopticCalendarMasterData",
+  "type": "object",
+  "required": ["version", "feasts_fixed", "feasts_movable", "saints", "daily_commemorations", "fasting_periods"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "generated": { "type": "string", "format": "date-time" },
+    "feasts_fixed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "jour_copte", "mois_copte", "rang", "titre_ar"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[A-Z0-9_]+$" },
+          "jour_copte": { "type": "integer", "minimum": 0, "maximum": 30 },
+          "mois_copte": { "type": "integer", "minimum": 0, "maximum": 13 },
+          "rang": { "type": "string" },
+          "titre_ar": { "type": "string" },
+          "titre_fr": { "type": "string" },
+          "resume_ar": { "type": "string" },
+          "mots_cles_ar": { "type": "array", "items": { "type": "string" } },
+          "actif": { "type": "boolean", "default": true }
+        }
+      }
+    },
+    "feasts_movable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "offset_jours", "titre_ar"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[A-Z0-9_]+$" },
+          "offset_jours": { "type": "integer" },
+          "rang": { "type": "string" },
+          "titre_ar": { "type": "string" },
+          "titre_fr": { "type": "string" },
+          "resume_ar": { "type": "string" }
+        }
+      }
+    },
+    "saints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "nom_ar", "jour_copte", "mois_copte"],
+        "properties": {
+          "id": { "type": "integer" },
+          "nom_ar": { "type": "string" },
+          "nom_fr": { "type": "string" },
+          "type": { "type": "string" },
+          "jour_copte": { "type": "integer" },
+          "mois_copte": { "type": "integer" },
+          "resume_ar": { "type": "string" },
+          "fiabilite": { "type": "string" }
+        }
+      }
+    },
+    "daily_commemorations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["jour_copte", "mois_copte", "liste_saints"],
+        "properties": {
+          "jour_copte": { "type": "integer" },
+          "mois_copte": { "type": "integer" },
+          "liste_saints": { "type": "array", "items": { "type": "integer" } }
+        }
+      }
+    },
+    "fasting_periods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "debut_type", "fin_type"],
+        "properties": {
+          "code": { "type": "string" },
+          "debut_type": { "type": "string" },
+          "debut_ref": { "type": "object" },
+          "fin_type": { "type": "string" },
+          "fin_ref": { "type": "object" },
+          "intensite": { "type": "string" }
+        }
+      }
+    },
+    "paramon_rules": {
+      "type": "object",
+      "properties": {
+        "NATIVITY_PARAMON": { "type": "object" },
+        "THEOPHANY_PARAMON": { "type": "object" }
+      }
+    },
+    "metadata_sources": { "type": "array" }
+  }
+}
